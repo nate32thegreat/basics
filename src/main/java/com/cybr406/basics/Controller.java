@@ -1,16 +1,21 @@
 package com.cybr406.basics;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class Controller
 {
     @RequestMapping("/helloworld")
-    public String pathGreeting() {
+    public String pathGreeting()
+    {
         return "Hello, world.";
     }
 
@@ -20,41 +25,26 @@ public class Controller
         return "Hello, " + name + ".";
     }
 
-    @RequestMapping("/path/to/{victory}")
-    public String path(@PathVariable String victory)
+    @RequestMapping("/path/to/{name}")
+    public String path(@PathVariable String name)
     {
-       // victory = "You're on the path to victory!";
-       // return victory;
-        return "You're on the path to victory!";
+        return String.format("You're on the path to %s!", name);
     }
 
-    @RequestMapping("/map?key1=aaa&key2=bbb")
-    public String multiValue(@RequestParam MultiValueMap <String,String> multiValue)
+    @RequestMapping("/map")
+    public String map(@RequestParam MultiValueMap<String, String> params)
     {
-        String multivalue = "key1 values = aaa\n" +
-                "key2 values = bbb";
-
-        return multivalue;
-
+        // Possibility 1 - steams api
+        return params.entrySet().stream()
+                .map(entry -> String.format("%s values = %s", entry.getKey(), String.join(", ", entry.getValue())))
+                .collect(Collectors.joining("\n"));
     }
 
-    @RequestMapping("/map?key1=aaa&key2=bbb&key2=ccc")
-    public String multiValueParam(@RequestParam List<String> multiParam)
+    @PostMapping("/register")
+    public ResponseEntity<User> createUser (@Valid @RequestBody User user)
     {
-        return "Parameters are" + multiParam;
-
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
-
-    /*@RequestMapping("/register")
-    public String userCreation(@RequestParam User nate)
-    {
-        nate.setUsername(nate.getUsername());
-        nate.setPassword(nate.getPassword());
-
-        return nate.getUsername() + nate.getPassword();
-
-    }
-    */
 
     @RequestMapping("/register")
     public String userValid(@RequestParam String username, String password)
@@ -65,7 +55,6 @@ public class Controller
         user.setPassword("secret");
 
         return "{ \"username\" : \"" + username + "\", \"password\" : \"" + password + "\" }";
-
 
     }
 

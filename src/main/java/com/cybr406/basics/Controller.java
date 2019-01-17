@@ -71,7 +71,7 @@ public class Controller
 
     @RequestMapping("/env")
     public String localEnv() {
-        return "local";
+        return environment;
     }
 
 

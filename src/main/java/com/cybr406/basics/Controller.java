@@ -1,8 +1,10 @@
 package com.cybr406.basics;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -13,6 +15,15 @@ import java.util.stream.Collectors;
 @RestController
 public class Controller
 {
+    @Value("${app.environment}")
+    String environment;
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder)
+    {
+        binder.setValidator(new UserValidator());
+    }
+
     @RequestMapping("/helloworld")
     public String pathGreeting()
     {
@@ -46,17 +57,17 @@ public class Controller
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
-    @RequestMapping("/register")
-    public String userValid(@RequestParam String username, String password)
-    {
-        User user = new User();
-
-        user.setUsername("test");
-        user.setPassword("secret");
-
-        return "{ \"username\" : \"" + username + "\", \"password\" : \"" + password + "\" }";
-
-    }
+//    @RequestMapping("/register")
+//    public String userValid(@RequestParam String username, String password)
+//    {
+//        User user = new User();
+//
+//        user.setUsername("test");
+//        user.setPassword("secret");
+//
+//        return "{ \"username\" : \"" + username + "\", \"password\" : \"" + password + "\" }";
+//
+//    }
 
     @RequestMapping("/env")
     public String localEnv() {
